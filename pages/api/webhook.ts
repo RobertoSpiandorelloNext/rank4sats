@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
-import getRawBody from 'raw-body';
 
 const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Seu segredo de assinatura
 
@@ -33,20 +32,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Missing or invalid signature header' });
       }
 
-      // Use raw-body para obter o corpo da requisição
-      const body = await getRawBody(req);
+      // Acessa o corpo da requisição diretamente
+      const body = await req.body;
 
-      // Serializa o corpo como string JSON para a verificação de assinatura
-      const isValidSignature = verifySignature(signature, body.toString(), SIGNING_SECRET);
+      // Verifica a assinatura
+      const isValidSignature = verifySignature(signature, JSON.stringify(body), SIGNING_SECRET);
 
       if (!isValidSignature) {
         return res.status(401).json({ error: 'Invalid signature' });
       }
 
       // Processa o evento se a assinatura for válida
-      console.log("Evento válido recebido:", JSON.parse(body.toString()));
+      console.log("Evento válido recebido:", body);
 
-      return res.status(200).json({ message: 'Website registered successfully', body: JSON.parse(body.toString()) });
+      return res.status(200).json({ message: 'Website registered successfully', body });
     } catch (error) {
       console.error("Erro ao processar o evento:", error);
       return res.status(500).json({ error: 'Internal server error' });
