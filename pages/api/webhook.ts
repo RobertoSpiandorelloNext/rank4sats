@@ -9,10 +9,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || '5432', 10),
   ssl: {
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // Para desenvolvimento, desative em produção
   },
 });
-
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -23,9 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Acessa o corpo da requisição diretamente
-      const body = await req.body;
+      const body = req.body; // Não é necessário usar await aqui
 
-      if (body.event_type == "payment.confirmed") {
+      if (body.event_type === "payment.confirmed") {
         const client = await pool.connect();
 
         const insertQuery = `
@@ -35,13 +34,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         `;
 
         const values = [JSON.stringify(body)];
-        const result = await client.query(insertQuery, values); // Check API partner Speed 
+        const result = await client.query(insertQuery, values);
         client.release();
+        
         const paymentId = result.rows[0].id;
         return res.status(200).json({ message: 'Confirmed payment registered successfully', paymentId });
       }
       return res.status(200).json({ message: 'Event triggered but not a confirmed payment' });
     } catch (error) {
+      console.error('Error processing request:', error); // Log do erro
       return res.status(500).json({ error: 'Internal server error' });
     }
   } else {
