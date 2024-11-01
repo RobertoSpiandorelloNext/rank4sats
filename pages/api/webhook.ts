@@ -1,14 +1,41 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import crypto from 'crypto';
+
+const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Your signing secret
+
+// Function to verify the signature
+function verifySignature(signature: string, payload: string, secret: string): boolean {
+  const [version, receivedSignature] = signature.split(',');
+  if (version !== 'v1') {
+    return false;
+  }
+
+  const hmac = crypto.createHmac('sha256', secret);
+  hmac.update(payload);
+  const expectedSignature = `v1,${hmac.digest('base64')}`;
+
+  return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expectedSignature));
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const data = req.body; // O `body` já deve conter o JSON no Next.js
+      const signature = req.headers['webhook-signature'];
+      if (!signature || Array.isArray(signature)) {
+        return res.status(400).json({ error: 'Missing or invalid signature header' });
+      }
+
+      const body = JSON.stringify(req.body); // Serialize body as JSON string for signature check
+      const isValidSignature = verifySignature(signature, body, SIGNING_SECRET);
+
+      if (!isValidSignature) {
+        return res.status(401).json({ error: 'Invalid signature' });
+      }
 
       // Processa o evento
-      console.log("Evento recebido:", data);
+      console.log("Valid event received:", req.body);
 
-      return res.status(200).json({ message: 'Website registered successfully', data });
+      return res.status(200).json({ message: 'Website registered successfully', body });
     } catch (error) {
       console.error("Erro ao processar o evento:", error);
       return res.status(500).json({ error: 'Internal server error' });
