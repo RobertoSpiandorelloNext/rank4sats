@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 
-const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Your signing secret
+const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Seu segredo de assinatura
 
-// Function to verify the signature
+// Função para verificar a assinatura
 function verifySignature(signature: string, payload: string, secret: string): boolean {
   const [version, receivedSignature] = signature.split(',');
   if (version !== 'v1') {
@@ -14,7 +14,15 @@ function verifySignature(signature: string, payload: string, secret: string): bo
   hmac.update(payload);
   const expectedSignature = `v1,${hmac.digest('base64')}`;
 
-  return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expectedSignature));
+  // Garante que os buffers tenham o mesmo comprimento
+  const receivedBuffer = Buffer.from(receivedSignature, 'base64');
+  const expectedBuffer = Buffer.from(expectedSignature.split(',')[1], 'base64');
+
+  if (receivedBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -25,15 +33,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Missing or invalid signature header' });
       }
 
-      const body = JSON.stringify(req.body); // Serialize body as JSON string for signature check
+      const body = JSON.stringify(req.body); // Serializa o corpo como string JSON para a verificação de assinatura
       const isValidSignature = verifySignature(signature, body, SIGNING_SECRET);
 
       if (!isValidSignature) {
         return res.status(401).json({ error: 'Invalid signature' });
       }
 
-      // Processa o evento
-      console.log("Valid event received:", req.body);
+      // Processa o evento se a assinatura for válida
+      console.log("Evento válido recebido:", req.body);
 
       return res.status(200).json({ message: 'Website registered successfully', body });
     } catch (error) {
