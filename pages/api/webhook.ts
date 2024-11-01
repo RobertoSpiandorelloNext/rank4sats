@@ -5,7 +5,7 @@ import getRawBody from 'raw-body';
 const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Seu segredo de assinatura
 
 // Função para verificar a assinatura
-function verifySignature(signature: string, payload: Buffer, secret: string): boolean {
+function verifySignature(signature: string, payload: string, secret: string): boolean {
   const [version, receivedSignature] = signature.split(',');
   if (version !== 'v1') {
     return false;
@@ -33,10 +33,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Missing or invalid signature header' });
       }
 
-      // Obtém o raw body da requisição
+      // Use raw-body para obter o corpo da requisição
       const body = await getRawBody(req);
 
-      const isValidSignature = verifySignature(signature, body, SIGNING_SECRET);
+      // Serializa o corpo como string JSON para a verificação de assinatura
+      const isValidSignature = verifySignature(signature, body.toString(), SIGNING_SECRET);
 
       if (!isValidSignature) {
         return res.status(401).json({ error: 'Invalid signature' });
@@ -45,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Processa o evento se a assinatura for válida
       console.log("Evento válido recebido:", JSON.parse(body.toString()));
 
-      return res.status(200).json({ message: 'Website registered successfully' });
+      return res.status(200).json({ message: 'Website registered successfully', body: JSON.parse(body.toString()) });
     } catch (error) {
       console.error("Erro ao processar o evento:", error);
       return res.status(500).json({ error: 'Internal server error' });
