@@ -10,6 +10,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 'success' });
   } catch (error) {
     console.error("Erro ao processar o evento:", error);
-    return NextResponse.json({ status: 'error', message: error.message });
+
+    // Verifica se o erro é uma instância de Error para acessar a propriedade 'message' com segurança
+    const message = error instanceof Error ? error.message : 'Erro desconhecido';
+    return NextResponse.json({ status: 'error', message });
   }
 }
