@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export async function POST(req: Request) {
-  try {
-    const data = await req.json();
-    // Processa o evento
-    console.log("Evento recebido:", data);
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    try {
+      const data = req.body; // O `body` já deve conter o JSON no Next.js
 
-    // Retorna uma resposta de sucesso
-    return NextResponse.json({ status: 'success' });
-  } catch (error) {
-    console.error("Erro ao processar o evento:", error);
+      // Processa o evento
+      console.log("Evento recebido:", data);
 
-    // Verifica se o erro é uma instância de Error para acessar a propriedade 'message' com segurança
-    const message = error instanceof Error ? error.message : 'Erro desconhecido';
-    return NextResponse.json({ status: 'error', message });
+      return res.status(200).json({ message: 'Website registered successfully', data });
+    } catch (error) {
+      console.error("Erro ao processar o evento:", error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  } else {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 }
