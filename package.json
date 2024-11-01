@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@speeddev/speed-js": "^2.0.0",
+    "@vercel/node": "^3.2.24",
     "next": "14.2.11",
     "pg": "^8.12.0",
     "raw-body": "^3.0.0",
@@ -22,6 +23,7 @@
     "@types/raw-body": "^2.3.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/winston": "^2.4.4",
     "eslint": "^8",
     "eslint-config-next": "14.2.11",
     "postcss": "^8",
