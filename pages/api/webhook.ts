@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
+import getRawBody from 'raw-body';
 
 const SIGNING_SECRET = process.env.SIGNING_SECRET || ''; // Seu segredo de assinatura
 
 // Função para verificar a assinatura
-function verifySignature(signature: string, payload: string, secret: string): boolean {
+function verifySignature(signature: string, payload: Buffer, secret: string): boolean {
   const [version, receivedSignature] = signature.split(',');
   if (version !== 'v1') {
     return false;
@@ -14,7 +15,6 @@ function verifySignature(signature: string, payload: string, secret: string): bo
   hmac.update(payload);
   const expectedSignature = `v1,${hmac.digest('base64')}`;
 
-  // Garante que os buffers tenham o mesmo comprimento
   const receivedBuffer = Buffer.from(receivedSignature, 'base64');
   const expectedBuffer = Buffer.from(expectedSignature.split(',')[1], 'base64');
 
@@ -33,7 +33,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Missing or invalid signature header' });
       }
 
-      const body = JSON.stringify(req.body); // Serializa o corpo como string JSON para a verificação de assinatura
+      // Obtém o raw body da requisição
+      const body = await getRawBody(req);
+
       const isValidSignature = verifySignature(signature, body, SIGNING_SECRET);
 
       if (!isValidSignature) {
@@ -41,9 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Processa o evento se a assinatura for válida
-      console.log("Evento válido recebido:", req.body);
+      console.log("Evento válido recebido:", JSON.parse(body.toString()));
 
-      return res.status(200).json({ message: 'Website registered successfully', body });
+      return res.status(200).json({ message: 'Website registered successfully' });
     } catch (error) {
       console.error("Erro ao processar o evento:", error);
       return res.status(500).json({ error: 'Internal server error' });
