@@ -31,33 +31,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const body = req.body; // Não é necessário usar await aqui
       console.log('Request body:', JSON.stringify(body)); // Log do corpo da requisição
 
-      if (body.event_type === "payment.confirmed") {
-        console.log('Processing confirmed payment...'); // Log informativo sobre o processamento
+      console.log('Processing event...'); // Log informativo sobre o processamento
 
-        const client = await pool.connect();
-        console.log('Database connection established.'); // Log de conexão ao banco
+      const client = await pool.connect();
+      console.log('Database connection established.'); // Log de conexão ao banco
 
-        const insertQuery = `
-          INSERT INTO payments (webhook_event)
-          VALUES ($1)
-          RETURNING id;
-        `;
+      const insertQuery = `
+        INSERT INTO payments (webhook_event)
+        VALUES ($1)
+        RETURNING id;
+      `;
 
-        const values = [JSON.stringify(body)];
-        console.log('Executing query:', insertQuery, 'with values:', values); // Log da consulta SQL
+      const values = [JSON.stringify(body)];
+      console.log('Executing query:', insertQuery, 'with values:', values); // Log da consulta SQL
 
-        const result = await client.query(insertQuery, values);
-        console.log('Insert result:', result); // Log do resultado da inserção
+      const result = await client.query(insertQuery, values);
+      console.log('Insert result:', result); // Log do resultado da inserção
 
-        client.release();
-        console.log('Database connection released.'); // Log de liberação da conexão
+      client.release();
+      console.log('Database connection released.'); // Log de liberação da conexão
 
-        const paymentId = result.rows[0].id;
-        return res.status(200).json({ message: 'Confirmed payment registered successfully', paymentId });
-      }
-      
-      console.log('Event triggered but not a confirmed payment.'); // Log informativo para outros eventos
-      return res.status(200).json({ message: 'Event triggered but not a confirmed payment' });
+      const paymentId = result.rows[0].id;
+      return res.status(200).json({ message: 'Confirmed payment registered successfully', paymentId });
+  
     } catch (error) {
       console.error('Error processing request:', error); // Log do erro
       return res.status(500).json({ error: 'Internal server error' });
