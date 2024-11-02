@@ -13,6 +13,8 @@ const pool = new Pool({
   },
 });
 
+//
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('Received request:', req.method, req.headers); // Log do método e cabeçalhos da requisição
 
