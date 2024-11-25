@@ -29,30 +29,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Acessa o corpo da requisição diretamente
       const body = req.body; // Não é necessário usar await aqui
-      console.log('Request body:', JSON.stringify(body)); // Log do corpo da requisição
 
-      console.log('Processing event...'); // Log informativo sobre o processamento
+      if (body.data.object.metadata.siteId) {
+        console.log('Request body:', JSON.stringify(body)); // Log do corpo da requisição
 
-      const client = await pool.connect();
-      console.log('Database connection established.'); // Log de conexão ao banco
+        console.log('Processing event...'); // Log informativo sobre o processamento
 
-      const insertQuery = `
-        INSERT INTO payments (webhook_event)
-        VALUES ($1)
-        RETURNING id;
-      `;
+        const client = await pool.connect();
+        console.log('Database connection established.'); // Log de conexão ao banco
 
-      const values = [JSON.stringify(body)];
-      console.log('Executing query:', insertQuery, 'with values:', values); // Log da consulta SQL
+        const insertQuery = `
+          INSERT INTO payments (webhook_event)
+          VALUES ($1)
+          RETURNING id;
+        `;
 
-      const result = await client.query(insertQuery, values);
-      console.log('Insert result:', result); // Log do resultado da inserção
+        const values = [JSON.stringify(body)];
+        console.log('Executing query:', insertQuery, 'with values:', values); // Log da consulta SQL
 
-      client.release();
-      console.log('Database connection released.'); // Log de liberação da conexão
+        const result = await client.query(insertQuery, values);
+        console.log('Insert result:', result); // Log do resultado da inserção
 
-      const paymentId = result.rows[0].id;
-      return res.status(200).json({ message: 'Confirmed payment registered successfully', paymentId });
+        client.release();
+        console.log('Database connection released.'); // Log de liberação da conexão
+
+        const paymentId = result.rows[0].id;
+        return res.status(200).json({ message: 'Confirmed payment registered successfully', paymentId });
+      }
   
     } catch (error) {
       console.error('Error processing request:', error); // Log do erro
