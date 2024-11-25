@@ -63,8 +63,8 @@ const Home = () => {
       (speedInstance as SpeedInstance)?.createCheckoutSession({
         currency: "BTC",
         amount: 0.00002,
-        successUrl: `${process.env.NEXT_PUBLIC_DOMAIN_NAME}/confirmedPayment`,
-        cancelUrl: process.env.NEXT_PUBLIC_DOMAIN_NAME,
+        successUrl: `${process.env.NEXT_PUBLIC_DOMAIN_NAME}/dashboard`,
+        cancelUrl:  `${process.env.NEXT_PUBLIC_DOMAIN_NAME}/dashboard`,
         successMessage: "Payment successful! Your website is now set to be featured in our premium listing, making it accessible to the public.",
         paymentMethods: ["lightning"],
         metadata: {
