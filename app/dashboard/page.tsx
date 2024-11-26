@@ -76,10 +76,6 @@ const Home = () => {
   // react-hooks/exhaustive-deps
   }, [page, fetchRankedSites]);
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
   const isValidUrl = (url: string) => {
     const httpsRegex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+/;
     return httpsRegex.test(url);
@@ -203,7 +199,7 @@ const Home = () => {
           <h1 className="text-4xl font-bold tracking-tight animate-bounce-slow">Rank4Sats</h1>
           <p className="text-lg font-semibold flex items-center space-x-2">
             <span>Be the first lucky visitor and earn</span>
-            <span className="animate-pulse text-yellow-400">2500 Satoshis!</span>
+            <span className="animate-pulse text-yellow-400">1000 Satoshis!</span>
           </p>
         </div>
       </header>
@@ -211,10 +207,10 @@ const Home = () => {
       <main className="container mx-auto px-4 py-10">
         <section className="bg-white p-8 rounded-lg shadow-lg mb-10 relative overflow-hidden">
           <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center relative z-10">
-            Get Your Website Ranked for Just 5000 Satoshis!
+            Get Your Website Ranked for Just 2000 Satoshis!
           </h2>
           <p className="text-gray-600 text-center mb-6 relative z-10">
-            Join our ranking list and drive traffic to your website. If you&apos;re the first visitor to a new link, you&apos;ll instantly win 2500 satoshis. Take the chance!
+            Join our ranking list and drive traffic to your website. If you&apos;re the first visitor to a new link, you&apos;ll instantly win 1000 satoshis. Take the chance!
           </p>
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
             <input
@@ -230,7 +226,7 @@ const Home = () => {
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-lg hover:opacity-90 transition"
             >
-              Rank My Website for 5000 Sats
+              Rank My Website for 2000 Sats
             </button>
           </form>
         </section>
@@ -246,7 +242,13 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
+              {error ? (
+                <tr>
+                  <td colSpan={2} className="border border-gray-300 px-4 py-2 text-center text-red-600">
+                    <span>There are no sites registered yet</span>
+                  </td>
+                </tr>
+              ) : loading ? (
                 <tr>
                   <td colSpan={2} className="border border-gray-300 px-4 py-2 text-center">
                     <div className="flex justify-center items-center">
@@ -287,7 +289,7 @@ const Home = () => {
                   </tr>
                 ))
               )}
-            </tbody>
+          </tbody>
           </table>
           <div className="mt-4 flex justify-between">
             <button
