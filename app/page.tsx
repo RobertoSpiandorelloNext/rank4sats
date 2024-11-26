@@ -243,7 +243,7 @@ const Home = () => {
             <tbody>
               {error ? (
                 <tr>
-                  <td colSpan={2} className="border border-gray-300 px-4 py-2 text-center">
+                  <td colSpan={2} className="border border-gray-300 px-4 py-2 text-center text-gray-800">
                     <span>There are no sites registered yet</span>
                   </td>
                 </tr>
