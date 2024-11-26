@@ -309,7 +309,7 @@ const Home = () => {
         </section>
       </main>
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Important Notice</h2>
             <p className="text-gray-600">
