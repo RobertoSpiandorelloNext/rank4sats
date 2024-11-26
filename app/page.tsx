@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface SpeedInstance {
   createCheckoutSession: (options: {
@@ -37,6 +38,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Speed) {
@@ -73,7 +75,7 @@ const Home = () => {
    
     fetchRankedSites(page);
   // react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, router.asPath]);
 
   const isValidUrl = (url: string) => {
     const httpsRegex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+/;
