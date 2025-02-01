@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 interface SpeedInstance {
   createCheckoutSession: (options: {
@@ -39,7 +38,6 @@ const Home = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [isClient, setIsClient] = useState(false);
-  const router = useRouter
 
   // Ensure that useRouter is only accessed on the client side
   useEffect(() => {
