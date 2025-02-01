@@ -72,6 +72,11 @@ Businesses can list their websites on Rank4Sats, pay a fee in satoshis to have t
 
 ## Contributing
 
+## Issues and Pull Requests
+
+- **Open an Issue**: Users can open an issue in a repository to ask questions or communicate with the repository maintainers or other contributors.
+- **Comments on Pull Requests**: Users can comment on pull requests to communicate or ask for clarification about the code or changes.
+  
 We welcome contributions! If you want to help improve Rank4Sats, feel free to fork the repository, create a branch, and submit a pull request. Here are a few ways you can contribute:
 
 - **Bug Fixes**: Report any bugs you find. 
