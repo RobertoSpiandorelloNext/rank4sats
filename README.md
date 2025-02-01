@@ -78,7 +78,7 @@ We welcome contributions! If you want to help improve Rank4Sats, feel free to fo
 - **Feature Requests**: Suggest new features for the platform.
 - **Documentation**: Help us improve the documentation or translate it into other languages.
 
-##License
+## License
 
 Rank4Sats is licensed under the MIT License.
 
