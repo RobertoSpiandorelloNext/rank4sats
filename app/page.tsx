@@ -38,7 +38,13 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+  const router = useRouter
+
+  // Ensure that useRouter is only accessed on the client side
+  useEffect(() => {
+    setIsClient(true); // Mark that we're on the client side
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Speed) {
@@ -75,7 +81,7 @@ const Home = () => {
    
     fetchRankedSites(page);
   // react-hooks/exhaustive-deps
-  }, [page, router.asPath]);
+  }, [page, isClient]);
 
   const isValidUrl = (url: string) => {
     const httpsRegex = /^https:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+/;
